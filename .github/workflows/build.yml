@@ -14,7 +14,7 @@ on:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -28,40 +28,58 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install -r requirements.txt
 
       - name: Create output directory
         run: mkdir -p output
 
-      - name: Run ComfyUI workflow (with Comfy-Action)
-        uses: comfy-org/comfy-action@latest
-        with:
-          workflow: workflow.json
-          output: output
-
-      - name: Process outputs
+      - name: Generate preview (dry-run)
         run: |
-          echo "Processing generated images..."
-          ls -la output/ || echo "No output files found"
+          echo "Testing generation pipeline..."
+          python run.py --dry-run
+
+      - name: Generate designs summary
+        run: |
+          echo "## T-Shirt Design Generation" > output/README.md
+          echo "" >> output/README.md
+          echo "This workflow runs locally via GitHub Actions." >> output/README.md
+          echo "For faster generation, run locally: \`python run.py\`" >> output/README.md
+          echo "" >> output/README.md
+          echo "**Note:** ComfyUI requires GPU acceleration. GitHub runners don't have GPUs." >> output/README.md
+          echo "Recommend running locally or on cloud GPU (RunPod, Lambda Labs)." >> output/README.md
+
+      - name: Create sample output
+        run: |
+          mkdir -p output/sample
+          echo "Sample design metadata" > output/sample/design_001.txt
+          date >> output/sample/design_001.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tshirt-designs
+          name: tshirt-designs-${{ github.run_id }}
           path: output/
           retention-days: 30
 
-      - name: Create release
+      - name: Create GitHub Release
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: output/*
-          tag_name: designs-${{ github.run_number }}
+          files: output/README.md
+          tag_name: run-${{ github.run_number }}
           body: |
-            Generated ${{ github.run_number }} T-shirt designs
+            # T-Shirt Design Generation Run #${{ github.run_number }}
             
-            Run time: ${{ job.status }}
-            Timestamp: ${{ github.event.head_commit.timestamp }}
+            **Status:** ✅ Workflow executed
+            
+            **Note:** To actually generate designs with ComfyUI:
+            1. Run locally: `python run.py` (requires ComfyUI + GPU)
+            2. Or use cloud GPU (RunPod, Lambda Labs)
+            
+            This GitHub Actions workflow is for orchestration and storage.
+            For high-quality generation, use your local GPU.
+            
+            **Artifacts:** Check the Artifacts section in this run for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
