@@ -62,24 +62,8 @@ jobs:
           path: output/
           retention-days: 30
 
-      - name: Create GitHub Release
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          files: output/README.md
-          tag_name: run-${{ github.run_number }}
-          body: |
-            # T-Shirt Design Generation Run #${{ github.run_number }}
-            
-            **Status:** ✅ Workflow executed
-            
-            **Note:** To actually generate designs with ComfyUI:
-            1. Run locally: `python run.py` (requires ComfyUI + GPU)
-            2. Or use cloud GPU (RunPod, Lambda Labs)
-            
-            This GitHub Actions workflow is for orchestration and storage.
-            For high-quality generation, use your local GPU.
-            
-            **Artifacts:** Check the Artifacts section in this run for details.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Workflow complete
+        run: |
+          echo "✅ Workflow completed successfully!"
+          echo "📦 Check the Artifacts section to download results"
+          echo "📝 To generate actual designs, run locally: python run.py"
