@@ -1,0 +1,59 @@
+{
+  "comfy_server": {
+    "url": "http://127.0.0.1:8188",
+    "timeout": 30,
+    "polling_interval": 2
+  },
+  "generation": {
+    "image_width": 1024,
+    "image_height": 1024,
+    "steps": 25,
+    "cfg_scale": 7.5,
+    "sampler": "euler",
+    "scheduler": "normal",
+    "negative_prompt": "blurry, low quality, distorted, ugly, bad anatomy, watermark, text, signature"
+  },
+  "upscaling": {
+    "enabled": true,
+    "model": "RealESRGAN_x4plus.pth",
+    "scale_factor": 4,
+    "target_width": 4500,
+    "target_height": 5400
+  },
+  "background_removal": {
+    "enabled": false,
+    "method": "rembg"
+  },
+  "output": {
+    "directory": "output",
+    "format": "png",
+    "quality": 95,
+    "preserve_originals": true
+  },
+  "batch_processing": {
+    "enabled": true,
+    "create_metadata": true,
+    "create_archive": true,
+    "archive_format": "zip"
+  },
+  "platforms": {
+    "etsy": {
+      "enabled": true,
+      "tags": ["tshirt", "design", "print-on-demand", "merchandise"]
+    },
+    "redbubble": {
+      "enabled": true,
+      "tags": ["tshirt", "apparel", "design"]
+    },
+    "merch_by_amazon": {
+      "enabled": true,
+      "category": "Clothing"
+    }
+  },
+  "github_actions": {
+    "enabled": true,
+    "schedule_cron": "0 0 * * 1",
+    "create_releases": true,
+    "artifact_retention_days": 30
+  }
+}

@@ -1,0 +1,67 @@
+name: Generate T-Shirt Designs
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Number of designs to generate (0 = all)'
+        required: false
+        default: '0'
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Create output directory
+        run: mkdir -p output
+
+      - name: Run ComfyUI workflow (with Comfy-Action)
+        uses: comfy-org/comfy-action@latest
+        with:
+          workflow: workflow.json
+          output: output
+
+      - name: Process outputs
+        run: |
+          echo "Processing generated images..."
+          ls -la output/ || echo "No output files found"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tshirt-designs
+          path: output/
+          retention-days: 30
+
+      - name: Create release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          files: output/*
+          tag_name: designs-${{ github.run_number }}
+          body: |
+            Generated ${{ github.run_number }} T-shirt designs
+            
+            Run time: ${{ job.status }}
+            Timestamp: ${{ github.event.head_commit.timestamp }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
