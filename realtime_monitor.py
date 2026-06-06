@@ -13,7 +13,7 @@ from datetime import datetime
 import sys
 
 OUTPUT_DIR = "output"
-COMFY_DIR = "../ComfyUI"
+COMFY_DIR = "ComfyUI"
 
 
 def print_header(text):
@@ -28,13 +28,14 @@ def start_comfyui():
     print_header("Starting ComfyUI")
     
     try:
+        current_dir = os.getcwd()
         os.chdir(COMFY_DIR)
         process = subprocess.Popen(
             [sys.executable, "main.py"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        os.chdir("..")
+        os.chdir(current_dir)
         print("✓ ComfyUI process started (PID: {})".format(process.pid))
         return process
     except Exception as e:
@@ -80,7 +81,7 @@ def monitor_generation():
         jpgs = len(list(output_path.glob("*.jpg")))
         current_count = pngs + jpgs
         
-        if current_count > last_count or current_time == time.time():
+        if current_count != last_count:
             elapsed = time.time() - start_time
             hours = int(elapsed // 3600)
             minutes = int((elapsed % 3600) // 60)
