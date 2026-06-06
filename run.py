@@ -160,7 +160,8 @@ def wait_for_completion(prompt_id: str, timeout: int = 600) -> bool:
             elif prompt_id in data.get("queue_running", {}):
                 status = "Running"
             else:
-                # Prompt completed
+                # Prompt completed - wait a bit for file to be written to disk
+                time.sleep(2)
                 return True
             
             if status != last_status:
@@ -179,6 +180,11 @@ def wait_for_completion(prompt_id: str, timeout: int = 600) -> bool:
 def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
     """Generate designs from prompts"""
     workflow = load_workflow(WORKFLOW_FILE)
+    
+    # Clear ComfyUI output folder at start of generation
+    import shutil
+    shutil.rmtree("ComfyUI/output", ignore_errors=True)
+    Path("ComfyUI/output").mkdir(parents=True, exist_ok=True)
     
     print(f"\n{'='*60}")
     print(f"T-Shirt Design Generation")
@@ -225,7 +231,7 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
             failed += 1
             print(f"  ✗ Design {idx} failed")
         
-        time.sleep(1)  # Brief delay between generations
+        time.sleep(3)  # Delay between generations to ensure completion
     
     print(f"\n{'='*60}")
     print(f"Generation Summary")
