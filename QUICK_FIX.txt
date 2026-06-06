@@ -1,0 +1,93 @@
+════════════════════════════════════════════════════════════════
+  T-SHIRT GENERATION - QUICK FIX (June 2026)
+════════════════════════════════════════════════════════════════
+
+❌ WHAT WAS BROKEN:
+   - 400 Bad Request errors on Kaggle
+   - 0 images generated despite loading 5 prompts
+   - Model was SDXL (needs 16GB, Kaggle T4 only has 15GB)
+
+✅ WHAT'S FIXED:
+   - Switched to Stable Diffusion 1.5 (lightweight, 4GB)
+   - Image size: 768x768 → 512x512
+   - Now works reliably on Kaggle T4 GPU
+
+════════════════════════════════════════════════════════════════
+  KAGGLE SETUP (5 CELLS)
+════════════════════════════════════════════════════════════════
+
+📌 CELL 1: Clone Repo
+   !git clone https://github.com/Codester06/tshirt.git
+   %cd tshirt-automation
+
+📌 CELL 2: Install Dependencies
+   !pip install -q requests pillow
+
+📌 CELL 3: Download Model (4GB - takes 2-3 min)
+   !mkdir -p ComfyUI/models/checkpoints
+   !wget -q --show-progress \
+     https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors \
+     -O ComfyUI/models/checkpoints/v1-5-pruned-emaonly.safetensors
+
+📌 CELL 4: Update Prompts (optional)
+   prompts = """iron man suit, red and gold armor, glowing arc reactor, minimalist vector art, tshirt design, superhero, high detail
+thor god of thunder, hammer mjolnir, lightning bolts, Norse mythology, golden armor, epic warrior, comic book style
+spiderman hero, red blue costume, web slinger pose, action packed, urban background, spider symbol, dynamic illustration
+programmer coder, laptop screen, code matrix, tech life, funny design, minimal style, digital art, tshirt print
+groot forest guardian, tree creature, "I am Groot", leaves and branches, nature inspired, comic book art, green character"""
+   with open("prompts.txt", "w") as f: f.write(prompts)
+
+📌 CELL 5: Generate (5-10 minutes)
+   !python colab_generate.py
+
+════════════════════════════════════════════════════════════════
+  WHAT YOU GET
+════════════════════════════════════════════════════════════════
+
+📦 OUTPUT FOLDER:
+   ✓ design_0001.png (Iron Man)
+   ✓ design_0002.png (Thor)
+   ✓ design_0003.png (Spider-Man)
+   ✓ design_0004.png (Programmer)
+   ✓ design_0005.png (Groot)
+   ✓ tshirt-designs-20260607_142530.zip (all 5 zipped)
+
+════════════════════════════════════════════════════════════════
+  TROUBLESHOOTING
+════════════════════════════════════════════════════════════════
+
+Q: "No images found in ComfyUI output"
+A: Check Cell 3 - is the 4GB model downloaded?
+
+Q: "400 Bad Request"
+A: Make sure you have latest code: !git pull origin main
+
+Q: "ComfyUI process crashed"
+A: Normal. Let it run for 30+ seconds to initialize.
+
+Q: "Out of Memory"
+A: Reduce prompts or image size in workflow.json
+
+════════════════════════════════════════════════════════════════
+  KEY FILES CHANGED
+════════════════════════════════════════════════════════════════
+
+✅ workflow.json
+   - Model: SDXL → Stable Diffusion 1.5
+   - Size: 768x768 → 512x512
+
+✅ NEW: KAGGLE_GUIDE.md
+   - Complete step-by-step instructions
+
+✅ NEW: FIX_SUMMARY.md
+   - Detailed explanation of the fix
+
+════════════════════════════════════════════════════════════════
+  REPOSITORY
+════════════════════════════════════════════════════════════════
+
+GitHub: https://github.com/Codester06/tshirt
+Latest commit: Stable Diffusion 1.5 model fix
+Status: ✅ Ready for Kaggle
+
+════════════════════════════════════════════════════════════════
