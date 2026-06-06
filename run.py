@@ -106,20 +106,39 @@ def queue_prompt(workflow: Dict) -> Optional[str]:
 
 
 def download_image(image_name: str, output_idx: int) -> bool:
-    """Download generated image from ComfyUI"""
+    """Copy generated image from ComfyUI output to our output folder"""
     try:
-        url = f"{COMFY_SERVER}/view?filename={image_name}"
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
+        # ComfyUI saves to its own output folder
+        comfyui_output = Path("ComfyUI/output")
         
-        # Save to output directory
-        output_path = Path(OUTPUT_DIR) / f"design_{output_idx:04d}.png"
-        with open(output_path, "wb") as f:
-            f.write(response.content)
+        if not comfyui_output.exists():
+            print(f"  ⚠ ComfyUI output folder not found")
+            return False
         
+        # Get all PNG files and sort by modification time
+        png_files = sorted(
+            comfyui_output.glob("*.png"),
+            key=lambda f: f.stat().st_mtime,
+            reverse=True
+        )
+        
+        if not png_files:
+            print(f"  ⚠ No images found in ComfyUI output")
+            return False
+        
+        # Copy the latest image
+        src = png_files[0]
+        dst = Path(OUTPUT_DIR) / f"design_{output_idx:04d}.png"
+        
+        # Copy file
+        import shutil
+        shutil.copy2(src, dst)
+        
+        print(f"  ✓ Saved: {dst.name}")
         return True
+        
     except Exception as e:
-        print(f"  ⚠ Could not download image: {e}")
+        print(f"  ⚠ Error copying image: {e}")
         return False
 
 
