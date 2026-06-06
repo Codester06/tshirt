@@ -201,6 +201,11 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
     for idx, prompt in enumerate(prompts, 1):
         print(f"[{idx}/{len(prompts)}] Generating: {prompt[:50]}...")
         
+        # Clear ComfyUI output before generating (so we get fresh image)
+        import shutil
+        shutil.rmtree("ComfyUI/output", ignore_errors=True)
+        Path("ComfyUI/output").mkdir(parents=True, exist_ok=True)
+        
         # Inject prompt into workflow
         updated_workflow = inject_prompt(workflow, prompt)
         
