@@ -43,12 +43,13 @@ def start_comfyui():
         return None
 
 
-def wait_for_server(timeout=30):
+def wait_for_server(timeout=60):
     """Wait for ComfyUI server to be ready"""
     print("⏳ Waiting for ComfyUI server to start...")
     
     import requests
     start_time = time.time()
+    attempt = 0
     
     while time.time() - start_time < timeout:
         try:
@@ -56,12 +57,29 @@ def wait_for_server(timeout=30):
             if response.status_code == 200:
                 print("✓ ComfyUI server is ready!\n")
                 return True
-        except:
-            pass
+        except Exception as e:
+            attempt += 1
+            if attempt % 5 == 0:  # Print every 5 attempts
+                print(f"  Still waiting... ({int(time.time() - start_time)}s)")
         
         time.sleep(1)
     
     print("✗ ComfyUI server failed to start within timeout")
+    print("  Trying alternative check...")
+    
+    # Try alternative check
+    try:
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(('127.0.0.1', 8188))
+        sock.close()
+        if result == 0:
+            print("✓ Server is responding on port 8188")
+            time.sleep(5)
+            return True
+    except:
+        pass
+    
     return False
 
 
