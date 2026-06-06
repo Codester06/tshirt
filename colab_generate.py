@@ -46,15 +46,13 @@ def main():
     print("  T-SHIRT DESIGN GENERATION - COLAB (REAL-TIME)")
     print("="*60 + "\n")
     
-    # Clear previous outputs automatically
+    # Clear only our output, NOT ComfyUI's output
     import shutil
     print("🧹 Clearing previous outputs...")
-    shutil.rmtree("ComfyUI/output", ignore_errors=True)
     shutil.rmtree("output", ignore_errors=True)
     
-    Path("ComfyUI/output").mkdir(parents=True, exist_ok=True)
     Path("output").mkdir(parents=True, exist_ok=True)
-    print("✓ Output directories cleared\n")
+    print("✓ Output directory cleared\n")
     
     # Check if ComfyUI exists
     if not Path("ComfyUI").exists():
