@@ -124,7 +124,7 @@ def download_image(image_name: str, output_idx: int) -> bool:
             print(f"  ⚠ No images found in ComfyUI output")
             return False
         
-        # Copy the latest image
+        # Copy the newest image (most recently generated)
         src = png_files[0]
         dst = Path(OUTPUT_DIR) / f"design_{output_idx:04d}.png"
         
@@ -132,7 +132,7 @@ def download_image(image_name: str, output_idx: int) -> bool:
         import shutil
         shutil.copy2(src, dst)
         
-        print(f"  ✓ Saved: {dst.name} (from {src.name})")
+        print(f"  ✓ Saved: {dst.name}")
         return True
         
     except Exception as e:
@@ -200,11 +200,6 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
     
     for idx, prompt in enumerate(prompts, 1):
         print(f"[{idx}/{len(prompts)}] Generating: {prompt[:50]}...")
-        
-        # Clear ComfyUI output before generating (so we get fresh image)
-        import shutil
-        shutil.rmtree("ComfyUI/output", ignore_errors=True)
-        Path("ComfyUI/output").mkdir(parents=True, exist_ok=True)
         
         # Inject prompt into workflow
         updated_workflow = inject_prompt(workflow, prompt)
