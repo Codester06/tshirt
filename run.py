@@ -204,6 +204,9 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
         # Inject prompt into workflow
         updated_workflow = inject_prompt(workflow, prompt)
         
+        # Set unique seed for each design
+        updated_workflow["4"]["inputs"]["seed"] = idx
+        
         # Queue to ComfyUI
         prompt_id = queue_prompt(updated_workflow)
         if not prompt_id:
@@ -214,9 +217,7 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
         if wait_for_completion(prompt_id):
             successful += 1
             # Download the generated image
-            # ComfyUI saves with default naming: tshirt_design_*.png
-            image_name = f"tshirt_design_{idx:05d}.png"
-            if download_image(image_name, idx):
+            if download_image(f"design_{idx:05d}.png", idx):
                 print(f"  ✓ Design {idx} complete")
             else:
                 print(f"  ⚠ Design {idx} generated but download failed")
