@@ -36,8 +36,8 @@
   },
   "4": {
     "inputs": {
-      "seed": 12345,
-      "steps": 25,
+      "seed": 0,
+      "steps": 20,
       "cfg": 7.5,
       "sampler_name": "euler",
       "scheduler": "normal",
@@ -66,8 +66,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1024,
-      "height": 1024,
+      "width": 768,
+      "height": 768,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -91,31 +91,6 @@
       "title": "VAE Decode"
     }
   },
-  "7": {
-    "inputs": {
-      "upscale_model": [
-        "8",
-        0
-      ],
-      "images": [
-        "6",
-        0
-      ]
-    },
-    "class_type": "LatentUpscale",
-    "_meta": {
-      "title": "Latent Upscale"
-    }
-  },
-  "8": {
-    "inputs": {
-      "upscale_model": "RealESRGAN_x4plus.pth"
-    },
-    "class_type": "UpscaleModelLoader",
-    "_meta": {
-      "title": "Load Upscale Model"
-    }
-  },
   "9": {
     "inputs": {
       "filename_prefix": "tshirt_design",
@@ -127,18 +102,6 @@
     "class_type": "SaveImage",
     "_meta": {
       "title": "Save Image"
-    }
-  },
-  "10": {
-    "inputs": {
-      "images": [
-        "6",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
     }
   }
 }
