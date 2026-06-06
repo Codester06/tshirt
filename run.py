@@ -228,5 +228,43 @@ def main():
     generate_designs(prompts, dry_run=args.dry_run)
 
 
+def create_archive_after_generation():
+    """Create ZIP archive after generation completes"""
+    try:
+        import zipfile
+        from datetime import datetime
+        
+        output_path = Path(OUTPUT_DIR)
+        if not output_path.exists():
+            return False
+        
+        # Find PNG files
+        images = list(output_path.glob("*.png")) + list(output_path.glob("*.jpg"))
+        if not images:
+            print("No images found to archive")
+            return False
+        
+        zip_filename = f"tshirt-designs-{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+        zip_path = output_path / zip_filename
+        
+        print(f"\n📦 Creating archive: {zip_filename}")
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for image in images:
+                zipf.write(image, arcname=image.name)
+        
+        size_mb = zip_path.stat().st_size / (1024*1024)
+        print(f"✓ Archive created: {zip_filename}")
+        print(f"  Size: {size_mb:.2f} MB")
+        print(f"  Location: {zip_path}")
+        return True
+    except Exception as e:
+        print(f"⚠ Could not create archive: {e}")
+        return False
+
+
 if __name__ == "__main__":
     main()
+    
+    # Automatically create archive after generation
+    print("\nAutomatically creating archive...")
+    create_archive_after_generation()
