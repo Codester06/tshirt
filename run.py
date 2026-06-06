@@ -113,7 +113,7 @@ def download_image(image_name: str, output_idx: int) -> bool:
             print(f"  ⚠ ComfyUI output folder not found")
             return False
         
-        # Get all PNG files and sort by modification time
+        # Get all PNG files and sort by modification time (newest first)
         png_files = sorted(
             comfyui_output.glob("*.png"),
             key=lambda f: f.stat().st_mtime,
@@ -132,7 +132,7 @@ def download_image(image_name: str, output_idx: int) -> bool:
         import shutil
         shutil.copy2(src, dst)
         
-        print(f"  ✓ Saved: {dst.name}")
+        print(f"  ✓ Saved: {dst.name} (from {src.name})")
         return True
         
     except Exception as e:
