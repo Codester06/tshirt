@@ -55,29 +55,27 @@ def inject_prompt(workflow: Dict, positive_prompt: str, negative_prompt: str = "
     """
     Inject prompt into workflow
     Finds CLIP Text Encode nodes and updates them
-    Adjust node numbers based on your workflow structure
     """
     workflow_copy = json.loads(json.dumps(workflow))
     
-    # Default negative prompt for better results
+    # Default negative prompt
     if not negative_prompt:
         negative_prompt = "blurry, low quality, distorted, ugly, bad anatomy, watermark"
     
-    # Iterate through workflow nodes to find text encode nodes
+    # Update prompts in all nodes
     for node_id, node in workflow_copy.items():
         if isinstance(node, dict):
-            class_name = node.get("class_type", "")
+            class_type = node.get("class_type", "")
+            inputs = node.get("inputs", {})
             
-            # Update positive CLIP Text Encode
-            if "CLIPTextEncode" in class_name or "text_encode" in class_name.lower():
-                inputs = node.get("inputs", {})
-                # Check if this is the positive prompt node
+            # Find positive prompt node (usually node 2)
+            if class_type == "CLIPTextEncode":
                 if "text" in inputs:
-                    # You may need to adjust this based on your workflow structure
-                    if isinstance(inputs.get("text"), str):
-                        # If there's a pattern, update it
-                        if "positive" in node_id.lower() or node_id in ["4", "5", "6"]:
-                            inputs["text"] = positive_prompt
+                    # Node 2 is positive, Node 3 is negative
+                    if node_id == "2":
+                        inputs["text"] = positive_prompt
+                    elif node_id == "3":
+                        inputs["text"] = negative_prompt
     
     return workflow_copy
 
