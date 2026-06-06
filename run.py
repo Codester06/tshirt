@@ -105,6 +105,24 @@ def queue_prompt(workflow: Dict) -> Optional[str]:
         return None
 
 
+def download_image(image_name: str, output_idx: int) -> bool:
+    """Download generated image from ComfyUI"""
+    try:
+        url = f"{COMFY_SERVER}/view?filename={image_name}"
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        
+        # Save to output directory
+        output_path = Path(OUTPUT_DIR) / f"design_{output_idx:04d}.png"
+        with open(output_path, "wb") as f:
+            f.write(response.content)
+        
+        return True
+    except Exception as e:
+        print(f"  ⚠ Could not download image: {e}")
+        return False
+
+
 def wait_for_completion(prompt_id: str, timeout: int = 600) -> bool:
     """Poll server until prompt completes"""
     start_time = time.time()
@@ -178,7 +196,13 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
         # Wait for completion
         if wait_for_completion(prompt_id):
             successful += 1
-            print(f"  ✓ Design {idx} complete")
+            # Download the generated image
+            # ComfyUI saves with default naming: tshirt_design_*.png
+            image_name = f"tshirt_design_{idx:05d}.png"
+            if download_image(image_name, idx):
+                print(f"  ✓ Design {idx} complete")
+            else:
+                print(f"  ⚠ Design {idx} generated but download failed")
         else:
             failed += 1
             print(f"  ✗ Design {idx} failed")
