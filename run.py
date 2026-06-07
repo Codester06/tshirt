@@ -204,6 +204,9 @@ def generate_designs(prompts: List[str], dry_run: bool = False) -> None:
     successful = 0
     failed = 0
     
+    # Give ComfyUI extra time to be fully ready before first generation
+    time.sleep(5)
+    
     for idx, prompt in enumerate(prompts, 1):
         print(f"[{idx}/{len(prompts)}] Generating: {prompt[:50]}...")
         

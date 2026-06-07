@@ -76,8 +76,8 @@ def main():
     print(f"✓ ComfyUI process started (PID: {comfyui_proc.pid})")
     
     # Wait for ComfyUI to be ready
-    print("⏳ Waiting 30 seconds for ComfyUI to initialize...")
-    time.sleep(30)
+    print("⏳ Waiting 40 seconds for ComfyUI to initialize...")
+    time.sleep(40)
     
     # Setup output directory
     output_path = Path("output")
