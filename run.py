@@ -55,8 +55,13 @@ def inject_prompt(workflow: Dict, positive_prompt: str, negative_prompt: str = "
     """
     Inject prompt into workflow
     Finds CLIP Text Encode nodes and updates them
+    Automatically adds t-shirt context if not present
     """
     workflow_copy = json.loads(json.dumps(workflow))
+    
+    # Add t-shirt design context if not already there
+    if "tshirt" not in positive_prompt.lower() and "shirt" not in positive_prompt.lower():
+        positive_prompt = f"{positive_prompt}, minimalist vector art, tshirt design, high detail"
     
     # Default negative prompt
     if not negative_prompt:
