@@ -11,8 +11,8 @@
     "cfg_scale": 7.5,
     "sampler": "euler",
     "scheduler": "normal",
-    "model": "v1-5-pruned-emaonly.safetensors",
-    "model_url": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors",
+    "model": "dreamshaper_8.safetensors",
+    "model_url": "https://huggingface.co/Lykon/DreamShaper/resolve/main/dreamshaper_8.safetensors",
     "negative_prompt": "blurry, low quality, distorted, ugly, bad anatomy, watermark, text, signature"
   },
   "upscaling": {
