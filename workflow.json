@@ -1,7 +1,7 @@
 {
   "1": {
     "inputs": {
-      "ckpt_name": "dreamshaper_8.safetensors"
+      "ckpt_name": "v1-5-pruned-emaonly.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -10,7 +10,7 @@
   },
   "2": {
     "inputs": {
-      "text": "minimalist vintage tiger, screen print style, vector art, black background, tshirt design, high detail",
+      "text": "test",
       "clip": [
         "1",
         1
@@ -23,7 +23,7 @@
   },
   "3": {
     "inputs": {
-      "text": "blurry, low quality, distorted, ugly, bad anatomy, watermark, text, signature",
+      "text": "blurry",
       "clip": [
         "1",
         1
