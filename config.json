@@ -7,12 +7,12 @@
   "generation": {
     "image_width": 512,
     "image_height": 512,
-    "steps": 25,
+    "steps": 20,
     "cfg_scale": 7.5,
     "sampler": "euler",
     "scheduler": "normal",
-    "model": "absolutereality_v181.safetensors",
-    "model_url": "https://huggingface.co/cyberrealistic/AbsoluteReality/resolve/main/absolutereality_v181.safetensors",
+    "model": "v1-5-pruned-emaonly.safetensors",
+    "model_url": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors",
     "negative_prompt": "blurry, low quality, distorted, ugly, bad anatomy, watermark, text, signature"
   },
   "upscaling": {
