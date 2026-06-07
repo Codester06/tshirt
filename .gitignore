@@ -1,6 +1,5 @@
 # Output directories
 output/
-input/
 .comfyui/
 
 # Python
