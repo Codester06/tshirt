@@ -4,72 +4,56 @@ T-Shirt Mockup Generator
 Overlays design images onto t-shirt templates
 """
 
-from PIL import Image, ImageDraw
+from PIL import Image
 from pathlib import Path
 import os
 
-def create_tshirt_mockup(design_path: str, output_path: str, tshirt_color: str = "white") -> bool:
+TSHIRT_TEMPLATE = "input/tshirt_template.png"
+
+def create_tshirt_mockup(design_path: str, output_path: str) -> bool:
     """
     Create a t-shirt mockup by overlaying design on template
     """
     try:
+        # Load template
+        if not Path(TSHIRT_TEMPLATE).exists():
+            print(f"✗ Template not found: {TSHIRT_TEMPLATE}")
+            return False
+        
+        template = Image.open(TSHIRT_TEMPLATE).convert("RGBA")
+        template_width, template_height = template.size
+        
         # Load design image
         design = Image.open(design_path).convert("RGBA")
         
-        # Create t-shirt template
-        tshirt_width = 1000
-        tshirt_height = 1200
-        
-        # T-shirt colors
-        colors = {
-            "white": (240, 240, 240),
-            "black": (40, 40, 40),
-            "blue": (25, 60, 120),
-            "red": (180, 30, 30),
-            "gray": (110, 110, 110),
-        }
-        
-        color = colors.get(tshirt_color.lower(), colors["white"])
-        
-        # Create base image (light background)
-        base = Image.new("RGB", (tshirt_width, tshirt_height), (200, 200, 200))
-        draw = ImageDraw.Draw(base)
-        
-        # Draw t-shirt shape (simple rectangle with sleeves)
-        # Main body
-        draw.rectangle([150, 100, 850, 1100], fill=color, outline=(60, 60, 60), width=3)
-        
-        # Left sleeve
-        draw.ellipse([20, 100, 200, 300], fill=color, outline=(60, 60, 60), width=3)
-        
-        # Right sleeve
-        draw.ellipse([800, 100, 980, 300], fill=color, outline=(60, 60, 60), width=3)
-        
-        # Neck
-        draw.ellipse([400, 80, 600, 200], fill=color, outline=(60, 60, 60), width=3)
-        
-        # Resize design to fit on t-shirt chest
-        design_size = 350
+        # Resize design to fit on t-shirt front (approximately 60% of template size)
+        design_size = int(template_width * 0.6)
         design_resized = design.resize((design_size, design_size), Image.Resampling.LANCZOS)
         
-        # Position design in center of t-shirt chest
-        x_pos = (tshirt_width - design_size) // 2
-        y_pos = int(tshirt_height * 0.35)  # 35% from top (center of chest)
+        # Position design in center of t-shirt
+        x_pos = (template_width - design_size) // 2
+        y_pos = int(template_height * 0.35)  # Center area of t-shirt
         
-        # Paste design onto t-shirt
-        base.paste(design_resized, (x_pos, y_pos), design_resized)
+        # Paste design onto template
+        template.paste(design_resized, (x_pos, y_pos), design_resized)
+        
+        # Convert to RGB for saving as JPG
+        template_rgb = Image.new("RGB", template.size, (255, 255, 255))
+        template_rgb.paste(template, mask=template.split()[3] if template.mode == 'RGBA' else None)
         
         # Save mockup
-        base.save(output_path, quality=95)
+        template_rgb.save(output_path, quality=95)
         print(f"✓ T-shirt mockup created: {Path(output_path).name}")
         return True
         
     except Exception as e:
         print(f"✗ Error creating mockup: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
-def batch_create_mockups(input_dir: str = "output", output_dir: str = "output/mockups", tshirt_color: str = "white"):
+def batch_create_mockups(input_dir: str = "output", output_dir: str = "output/mockups"):
     """
     Create mockups for all design images
     """
@@ -93,7 +77,6 @@ def batch_create_mockups(input_dir: str = "output", output_dir: str = "output/mo
     print(f"\n{'='*60}")
     print(f"Creating T-Shirt Mockups")
     print(f"{'='*60}")
-    print(f"T-shirt color: {tshirt_color}")
     print(f"Designs found: {len(designs)}\n")
     
     successful = 0
@@ -102,7 +85,7 @@ def batch_create_mockups(input_dir: str = "output", output_dir: str = "output/mo
         mockup_path = output_path / mockup_name
         
         print(f"Creating: {mockup_name}...", end=" ")
-        if create_tshirt_mockup(str(design_file), str(mockup_path), tshirt_color):
+        if create_tshirt_mockup(str(design_file), str(mockup_path)):
             successful += 1
             print("✓")
         else:
@@ -118,10 +101,9 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description="Create t-shirt mockups from designs")
-    parser.add_argument("--color", default="white", help="T-shirt color: white, black, blue, red, gray")
     parser.add_argument("--input", default="output", help="Input directory with designs")
     parser.add_argument("--output", default="output/mockups", help="Output directory for mockups")
     
     args = parser.parse_args()
     
-    batch_create_mockups(args.input, args.output, args.color)
+    batch_create_mockups(args.input, args.output)
