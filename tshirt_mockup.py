@@ -4,7 +4,7 @@ T-Shirt Mockup Generator
 Overlays design images onto t-shirt templates
 """
 
-from PIL import Image
+from PIL import Image, ImageDraw
 from pathlib import Path
 import os
 
@@ -17,36 +17,50 @@ def create_tshirt_mockup(design_path: str, output_path: str, tshirt_color: str =
         design = Image.open(design_path).convert("RGBA")
         
         # Create t-shirt template
-        tshirt_width = 800
-        tshirt_height = 1000
+        tshirt_width = 1000
+        tshirt_height = 1200
         
         # T-shirt colors
         colors = {
-            "white": (245, 245, 245),
-            "black": (30, 30, 30),
-            "blue": (0, 51, 102),
-            "red": (204, 0, 0),
-            "gray": (128, 128, 128),
+            "white": (240, 240, 240),
+            "black": (40, 40, 40),
+            "blue": (25, 60, 120),
+            "red": (180, 30, 30),
+            "gray": (110, 110, 110),
         }
         
         color = colors.get(tshirt_color.lower(), colors["white"])
         
-        # Create t-shirt image
-        tshirt = Image.new("RGB", (tshirt_width, tshirt_height), color)
+        # Create base image (light background)
+        base = Image.new("RGB", (tshirt_width, tshirt_height), (200, 200, 200))
+        draw = ImageDraw.Draw(base)
         
-        # Resize design to fit on t-shirt (front chest area)
-        design_size = 400
+        # Draw t-shirt shape (simple rectangle with sleeves)
+        # Main body
+        draw.rectangle([150, 100, 850, 1100], fill=color, outline=(60, 60, 60), width=3)
+        
+        # Left sleeve
+        draw.ellipse([20, 100, 200, 300], fill=color, outline=(60, 60, 60), width=3)
+        
+        # Right sleeve
+        draw.ellipse([800, 100, 980, 300], fill=color, outline=(60, 60, 60), width=3)
+        
+        # Neck
+        draw.ellipse([400, 80, 600, 200], fill=color, outline=(60, 60, 60), width=3)
+        
+        # Resize design to fit on t-shirt chest
+        design_size = 350
         design_resized = design.resize((design_size, design_size), Image.Resampling.LANCZOS)
         
-        # Position design in center-top area of t-shirt (like chest print)
+        # Position design in center of t-shirt chest
         x_pos = (tshirt_width - design_size) // 2
-        y_pos = int(tshirt_height * 0.25)  # 25% from top
+        y_pos = int(tshirt_height * 0.35)  # 35% from top (center of chest)
         
         # Paste design onto t-shirt
-        tshirt.paste(design_resized, (x_pos, y_pos), design_resized)
+        base.paste(design_resized, (x_pos, y_pos), design_resized)
         
         # Save mockup
-        tshirt.save(output_path, quality=95)
+        base.save(output_path, quality=95)
         print(f"✓ T-shirt mockup created: {Path(output_path).name}")
         return True
         
