@@ -5,12 +5,14 @@
     "polling_interval": 2
   },
   "generation": {
-    "image_width": 1024,
-    "image_height": 1024,
+    "image_width": 512,
+    "image_height": 512,
     "steps": 25,
     "cfg_scale": 7.5,
     "sampler": "euler",
     "scheduler": "normal",
+    "model": "absolutereality_v181.safetensors",
+    "model_url": "https://huggingface.co/cyberrealistic/AbsoluteReality/resolve/main/absolutereality_v181.safetensors",
     "negative_prompt": "blurry, low quality, distorted, ugly, bad anatomy, watermark, text, signature"
   },
   "upscaling": {
